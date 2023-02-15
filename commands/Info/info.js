@@ -76,9 +76,6 @@ module.exports = {
                 • **À lancé la vérification le : **${
                   results[0].date_inscription
                 }
-                • **Nickname : **${
-                  memberQuery.nickname ? memberQuery.nickname : "Aucun"
-                }
                 `
             )
             .setThumbnail(
