@@ -57,7 +57,10 @@ module.exports = {
     };
 
     /* It's hashing the email with the cipher defined in the .env file. */
-    mail = crypto.createHash(process.env.HASH_CIPHER).update(mail).digest("hex");
+    mail = crypto
+      .createHash(process.env.HASH_CIPHER)
+      .update(mail)
+      .digest("hex");
 
     /* It's creating a transporter to send the email. */
     var transporter = nodemailer.createTransport({
@@ -67,10 +70,9 @@ module.exports = {
         pass: process.env.GMAIL_PASSWORD,
       },
     });
-
-    /* It's checking if the email is already in the database. */
+    /* It's checking if the user is already in the database. */
     con.query(
-      `SELECT * FROM users WHERE mail='${mail}';`,
+      `SELECT * FROM users WHERE id_discord='${interaction.user.id}';`,
       function (error, results, fields) {
         /* It's checking if there is an error in the database. */
         if (error) {
@@ -84,49 +86,70 @@ module.exports = {
         /* It's checking if the email is already in the database. */
         if (results.length != 0)
           return interaction.reply({
-            content:
-              ":x: Cette email a déjà reçu un code. Veuillez vérifier votre boîte mail",
+            content: ":x: Vous avez déjà demandé une vérification.",
             ephemeral: true,
           });
+        /* It's checking if the email is already in the database. */
+        con.query(
+          `SELECT * FROM users WHERE mail='${mail}';`,
+          function (error, results, fields) {
+            /* It's checking if there is an error in the database. */
+            if (error) {
+              return interaction.reply({
+                content:
+                  ":x: Impossible de communiquer avec la base de données. Pouvez vous contacter un administrateur ?",
+                ephemeral: true,
+              });
+            }
 
-        /* It's sending the email and then inserting the data in the database. */
-        transporter.sendMail(mailOptions, function (error, info) {
-          if (error) {
-            console.log(error);
-            return interaction.reply({
-              content:
-                "L'envoi du code de confirmation a échoué. Cela n'est pas de votre faute. Pouvez vous contacter un administrateur IESN Squad en message privé ?",
-              ephemeral: true,
-            });
-          } else {
-            con.connect(function (err) {
-              if (err) throw err;
-            });
+            /* It's checking if the email is already in the database. */
+            if (results.length != 0)
+              return interaction.reply({
+                content:
+                  ":x: Cette email a déjà reçu un code. Veuillez vérifier votre boîte mail",
+                ephemeral: true,
+              });
 
-            con.query(
-              `INSERT INTO users (id_discord, code, mail) VALUES ('${interaction.user.id}', '${code}', '${mail}');`,
-              function (error, results, fields) {
-                if (error) {
-                  console.log(error);
-                  return interaction.reply({
-                    content:
-                      ":x: Impossible de communiquer avec la base de données. Pouvez vous contacter un administrateur ?",
-                    ephemeral: true,
-                  });
-                }
-                return interaction
-                  .reply({
-                    content:
-                      ":white_check_mark: Inscription envoyée. Vérifiez vos emails pour le code de confirmation.",
-                    ephemeral: true,
-                  })
-                  .catch((error) => {
-                    console.log(error);
-                  });
+            /* It's sending the email and then inserting the data in the database. */
+            transporter.sendMail(mailOptions, function (error, info) {
+              if (error) {
+                console.log(error);
+                return interaction.reply({
+                  content:
+                    "L'envoi du code de confirmation a échoué. Cela n'est pas de votre faute. Pouvez vous contacter un administrateur IESN Squad en message privé ?",
+                  ephemeral: true,
+                });
+              } else {
+                con.connect(function (err) {
+                  if (err) throw err;
+                });
+
+                con.query(
+                  `INSERT INTO users (id_discord, code, mail) VALUES ('${interaction.user.id}', '${code}', '${mail}');`,
+                  function (error, results, fields) {
+                    if (error) {
+                      console.log(error);
+                      return interaction.reply({
+                        content:
+                          ":x: Impossible de communiquer avec la base de données. Pouvez vous contacter un administrateur ?",
+                        ephemeral: true,
+                      });
+                    }
+                    return interaction
+                      .reply({
+                        content:
+                          ":white_check_mark: Inscription envoyée. Vérifiez vos emails pour le code de confirmation.",
+                        ephemeral: true,
+                      })
+                      .catch((error) => {
+                        console.log(error);
+                      });
+                  }
+                );
               }
-            );
+            });
           }
-        });
+        );
       }
     );
   },
