@@ -4,6 +4,8 @@ var crypto = require("crypto");
 
 require("dotenv").config();
 
+const salt = process.env.SALT;
+
 var con = mysql.createConnection({
   host: process.env.MYSQL_HOST,
   user: process.env.MYSQL_USER,
@@ -27,23 +29,12 @@ module.exports = {
     var mail = interaction.options.getString("email");
 
     /* It's checking if the email is valid. */
-    if (!mail.startsWith("etu") || !mail.includes("@henallux.be"))
-      return await interaction.reply({
-        content:
-          "Votre email est invalide. Assurez vous d'utiliser l'email sous sa forme etuXXXXX@henallux.be. Aucun redirecteur n'est autorisé.",
-        ephemeral: true,
-      });
-    if (mail.includes("+"))
-      return await interaction.reply({
-        content: "Bien essayé, mais c'est bloqué.",
-        ephemeral: true,
-      });
-    if (mail == "etuXXXXX@henallux.be")
-      return await interaction.reply({
-        content:
-          "Ceci n'est pas votre email. Utilisez votre réel email étudiant.",
-        ephemeral: true,
-      });
+    const regex = /^etu\d{5}@henallux\.be$/;
+    if(!regex.test(mail))return interaction.reply({
+      content:
+        ":x: Impossible de communiquer avec la base de données. Pouvez vous contacter un administrateur ?",
+      ephemeral: true,
+    });
 
     /* It's generating a random code for the user to verify his email. */
     var code = Math.random().toString(36).slice(2, 10);
@@ -59,7 +50,7 @@ module.exports = {
     /* It's hashing the email with the cipher defined in the .env file. */
     mail = crypto
       .createHash(process.env.HASH_CIPHER)
-      .update(mail)
+      .update(salt+mail+salt)
       .digest("hex");
 
     /* It's creating a transporter to send the email. */
