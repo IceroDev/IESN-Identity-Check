@@ -99,7 +99,7 @@ module.exports = {
         } else {
           return interaction.reply({
             content:
-              ":x: Je ne trouve pas votre compte Discord dans la base de données. Veuillez demander un code avec la commande /verify",
+              ":x: Le compte n'existe pas dans la base de données (il a peut-être été validé manuellement par un administrateur s'il est vérifié)",
             ephemeral: true,
           });
         }
