@@ -55,7 +55,7 @@ module.exports = {
 
     /* It's getting the data from the database. */
     con.query(
-      `SELECT * FROM users WHERE id_discord='${dID}';`,
+      `SELECT * FROM users WHERE id_discord='${memberQuery}';`,
       function (error, results, fields) {
         if (error) {
           return interaction.reply({
