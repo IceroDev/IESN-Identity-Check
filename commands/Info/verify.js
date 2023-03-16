@@ -32,7 +32,7 @@ module.exports = {
     const regex = /^etu\d{5}@henallux\.be$/;
     if(!regex.test(mail))return interaction.reply({
       content:
-        ":x: Impossible de communiquer avec la base de données. Pouvez vous contacter un administrateur ?",
+        ":x: Le format de votre email n'est pas correct. Veuillez entrer votre email etudiant sous sa forme etuXXXXX@henallux.be",
       ephemeral: true,
     });
 
