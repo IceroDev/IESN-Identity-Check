@@ -70,6 +70,12 @@ module.exports = {
           }, 10000);
         }
       );
+    }else{
+      interaction.reply({
+        content:
+          ":x: Opération annulée",
+        ephemeral: true,
+      });
     }
   },
 };
