@@ -5,5 +5,15 @@ client.on("ready", () => {
   client.user.setPresence({
     status: "online",
   });
-  client.user.setActivity("henallux.be", { type: 3 });
+
+  var status = [
+    "henallux.be",
+    "Un problème ? Ouvrez une issue sur GitHub !",
+    "👋",
+  ]
+  setInterval(function () {
+    var toDisplay = status[Math.floor(Math.random()*status.length)];
+    client.user.setActivity(toDisplay);
+  }, 15000); 
+  
 });
