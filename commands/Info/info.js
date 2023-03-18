@@ -4,26 +4,10 @@ var mysql = require("mysql2");
 
 module.exports = {
   name: "info",
-  description: "Affiche des informations de la base de données.",
-  options: [
-    {
-      type: 3,
-      name: "id",
-      description: "ID Discord",
-      required: true,
-    },
-  ],
+  description: "Affiche des informations de la base de données."
+  ,
 
   run: async (client, interaction) => {
-
-    let perms;
-    let memberQuery;
-
-    var dID = interaction.options.getString("id");
-
-    /* It's getting the guild and the member from the guild. */
-    const guild = client.guilds.cache.get(process.env.GUILD_ID);
-    var member = guild.members.cache.find((m) => m.id === interaction.user.id);
 
     /* It's checking if the user who is using the command has the permission "ManageMessages" and if he
     has it, it will set the variable "perms" to true and it will set the variable "memberQuery" to
@@ -31,15 +15,6 @@ module.exports = {
     doesn't have the permission "ManageMessages", it will set the variable "perms" to false and it
     will set the variable "memberQuery" to the member who has the ID "interaction.user.id" (the ID
     of the user who is using the command). */
-    if (member.permissions.has("ManageMessages")) {
-      perms = true;
-      memberQuery = guild.members.cache.find((m) => m.id === dID);
-    } else {
-      perms = false;
-      memberQuery = guild.members.cache.find(
-        (m) => m.id === interaction.user.id
-      );
-    }
 
     /* It's connecting to the database. */
     var con = mysql.createConnection({
@@ -55,7 +30,7 @@ module.exports = {
 
     /* It's getting the data from the database. */
     con.query(
-      `SELECT * FROM users WHERE id_discord='${memberQuery}';`,
+      `SELECT * FROM users WHERE id_discord='${interaction.user.id}';`,
       function (error, results, fields) {
         if (error) {
           return interaction.reply({
@@ -79,27 +54,18 @@ module.exports = {
                 `
             )
             .setThumbnail(
-              memberQuery.displayAvatarURL({
+              interaction.user.displayAvatarURL({
                 size: 512,
                 dynamic: true,
                 format: "png",
               })
             );
 
-          /* It's checking if the user has the permission "ManageMessages" and if he has it, it will
-          add a field in the embed with the code of the user. */
-          if (perms) {
-            embed.addFields({
-              name: "Code envoyé par mail",
-              value: `${results[0].code}`,
-            });
-          }
-
           return interaction.reply({ embeds: [embed], ephemeral: true });
         } else {
           return interaction.reply({
             content:
-              ":x: Le compte n'existe pas dans la base de données (il a peut-être été validé manuellement par un administrateur s'il est vérifié)",
+              ":x: Votre compte n'existe pas dans la base de donnée. (Si vous êtes quand même vérifié, un administrateur vous a probablement validé manuellement)",
             ephemeral: true,
           });
         }
