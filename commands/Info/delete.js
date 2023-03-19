@@ -4,7 +4,7 @@ require("dotenv").config();
 module.exports = {
   name: "delete",
   description:
-    "supprime vos données de la base de données. Supprime aussi vos accès au serveur",
+    "supprime vos données de la base de données. Supprime aussi votre vérification",
   options: [
     {
       type: 3,
@@ -46,31 +46,22 @@ module.exports = {
               ephemeral: true,
             });
           }
+          const guild = client.guilds.cache.get(process.env.GUILD_ID);
+          const member = guild.members.cache.find(
+            (m) => m.id === interaction.user.id
+          );
+          member.roles.remove(member.roles.cache).catch(error => console.log(error));
 
           /* It's sending a message to the user. */
           interaction.reply({
             content:
-              ":white_check_mark: Vos données ont été supprimées. Vous serez ejecté du serveur dans 10 secondes.",
+              ":white_check_mark: Vos données ont été supprimées.",
             ephemeral: true,
           });
 
-          /* It's kicking the user from the server after 10 seconds. */
-          setTimeout(() => {
-            const guild = client.guilds.cache.get(process.env.GUILD_ID);
-            const member = guild.members.cache.find(
-              (m) => m.id === interaction.user.id
-            );
-            member
-              .kick(
-                "L'utilisateur à demandé la suppression de ses données. Kick automatique"
-              )
-              .catch((error) => {
-                console.log("ERROR, don't have perms");
-              });
-          }, 10000);
         }
       );
-    }else{
+    } else {
       interaction.reply({
         content:
           ":x: Opération annulée",
