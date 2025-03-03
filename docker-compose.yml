@@ -1,0 +1,85 @@
+version: "3.6"
+
+networks:
+  IESN:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.19.0.0/24
+
+services:
+  IESN-IdentityChecker:
+    container_name: "IESN-IdentityChecker"
+    image: "node:16.18.1-buster"
+    hostname: "IESN-IdentityChecker"
+    command:
+      - "npm"
+      - "start"
+    entrypoint:
+      - "docker-entrypoint.sh"
+    environment:
+      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+      - "NODE_VERSION=16.18.1"
+      - "YARN_VERSION=1.22.19"
+    volumes:
+      - "/path/to/bot:/data"
+    working_dir: "/data"
+    restart: "unless-stopped"
+    stdin_open: true
+    tty: true
+    logging:
+      driver: "json-file"
+      options: {}
+    cap_drop:
+      - "AUDIT_CONTROL"
+      - "BLOCK_SUSPEND"
+      - "DAC_READ_SEARCH"
+      - "IPC_LOCK"
+      - "IPC_OWNER"
+      - "LEASE"
+      - "LINUX_IMMUTABLE"
+      - "MAC_ADMIN"
+      - "MAC_OVERRIDE"
+      - "NET_ADMIN"
+      - "NET_BROADCAST"
+      - "SYSLOG"
+      - "SYS_ADMIN"
+      - "SYS_BOOT"
+      - "SYS_MODULE"
+      - "SYS_NICE"
+      - "SYS_PACCT"
+      - "SYS_PTRACE"
+      - "SYS_RAWIO"
+      - "SYS_RESOURCE"
+      - "SYS_TIME"
+      - "SYS_TTY_CONFIG"
+      - "WAKE_ALARM"
+    networks:
+      IESN:
+        ipv4_address: 172.19.0.10
+
+  MariaDB:
+    container_name: "IESN-MariaDB"
+    image: "mariadb:11.7.2"
+    hostname: "mariadb"
+    command:
+      - "mariadbd"
+    entrypoint:
+      - "docker-entrypoint.sh"
+    environment:
+      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+      - "GOSU_VERSION=1.17"
+      - "LANG=C.UTF-8"
+      - "MARIADB_VERSION=1:11.7.2+maria~ubu2404"
+      - "MARIADB_ROOT_PASSWORD=changeme"
+    expose:
+      - "3306/tcp"
+    volumes:
+      - "/path/to/mysql:/var/lib/mysql"
+    restart: "unless-stopped"
+    logging:
+      driver: "json-file"
+      options: {}
+    networks:
+      IESN:
+        ipv4_address: 172.19.0.11
