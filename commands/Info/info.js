@@ -55,7 +55,7 @@ module.exports = {
             )
             .setThumbnail(
               interaction.user.displayAvatarURL({
-                size: 512,
+                size: 2048,
                 dynamic: true,
                 format: "png",
               })
