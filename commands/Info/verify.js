@@ -20,7 +20,7 @@ module.exports = {
     {
       type: 3,
       name: "email",
-      description: "Votre adresse email au format etuXXXXX@henallux.be",
+      description: "Votre adresse email au format etuXXXXX(YYYY)@henallux.be",
       required: true,
     },
   ],
@@ -29,7 +29,7 @@ module.exports = {
     var mail = interaction.options.getString("email");
 
     /* It's checking if the email is valid. */
-    const regex = /^etu\d{5}@(?:student\.)?henallux\.be$/;
+    const regex = /^etu\d{5,8}@(?:student\.)?henallux\.be$/;
     if(!regex.test(mail))return interaction.reply({
       content:
         ":x: Le format de votre email n'est pas correct. Veuillez entrer votre email etudiant sous sa forme etuXXXXX@henallux.be",
