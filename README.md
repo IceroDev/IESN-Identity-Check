@@ -1,3 +1,5 @@
+# ⚠️ Ce repository contient le code Legacy de Identity Checker, il est outdated et présente des vulnérabilités patchées dans les dernières versions.
+
 # IESN-Identity-Check
 ## Requis
 - NodeJS 16.18.1
